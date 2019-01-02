@@ -3,6 +3,36 @@ from django.http import HttpResponse
 from .models import Employee
 from .forms import PostForm
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.views.generic.list import ListView
+from django.utils import timezone
+from django.views.generic.edit import FormView
+from .forms import PostForm
+from django.urls import reverse_lazy
+class EmpUpdateView():
+    pass
+class ContactView(FormView):
+    template_name = 'personal/create.html'
+    form_class = PostForm
+    success_url = '/page1/'
+    def form_valid(self, form):
+        first_name = form.cleaned_data['first_name']
+        last_name = form.cleaned_data['last_name']
+        mail = form.cleaned_data['mail']
+        phonenumber = form.cleaned_data['phonenumber']
+        Employee(first_name=first_name,last_name=last_name,mail=mail,phonenumber=phonenumber).save()
+        # This method is called when valid form data has been POSTed.
+        # It should return an HttpResponse.
+        #form.send_email()
+        #return super().form_valid(form)
+        return super(ContactView, self).form_valid(form)
+class ArticleListView(ListView):
+    model = Employee
+    #paginate_by = 100  # if pagination is desired
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['now'] = timezone.now()
+        return context
+
 def index(request):
     return render(request,"base.html")
 
