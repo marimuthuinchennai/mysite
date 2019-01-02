@@ -8,8 +8,19 @@ from django.utils import timezone
 from django.views.generic.edit import FormView
 from .forms import PostForm
 from django.urls import reverse_lazy
-class EmpUpdateView():
-    pass
+from django.views.generic.edit import UpdateView
+from django.shortcuts import get_list_or_404, get_object_or_404
+
+class EmpUpdateView(UpdateView):
+    model = Employee
+    form_class = PostForm
+    #fields = ['first_name']
+    template_name = 'personal/employee_update_form.html'
+    #queryset=Employee.objects.all()
+    success_url = '/page1/'
+    def get_object(self):
+        id_=self.kwargs.get("id")
+        return get_object_or_404(Employee,id=id_)
 class ContactView(FormView):
     template_name = 'personal/create.html'
     form_class = PostForm
